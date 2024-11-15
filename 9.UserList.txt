@@ -1,0 +1,128 @@
+
+
+
+9. User List Component With Material-UI Integration and API Fetching
+
+
+//axios.js
+const myModule = {
+    get: jest.fn(() => 
+        Promise.resolve({
+            data: [
+                {
+                    id: 1,
+                    name: "John Doe",
+                    email: "john@gmail.com"
+                },
+                {
+                    id: 2,
+                    name: "Michael",
+                    email: "michael@gmail.com"
+                },
+                {
+                    id: 3,
+                    name: "Daemon",
+                    email: "daemon@gmail.com"
+                },
+                {
+                    id: 4,
+                    name: "Klaus",
+                    email: "klaus@gmail.com"
+                },
+                {
+                    id: 5,
+                    name: "Mikey",
+                    email: "mikey@gmail.com"
+                }
+            ]
+        })
+    )
+};
+
+export default myModule;
+
+
+//App.js
+import React from 'react';
+import UserList from './components/UserList';
+
+const App = () => {
+  return (
+    <div>
+      <h1>User Management</h1>
+      <UserList />
+    </div>
+  );
+};
+
+export default App;
+
+
+//UserList.jsx
+
+import React, { useEffect, useState } from 'react';
+import { Avatar, List, ListItem, ListItemAvatar, ListItemText, Typography } from '@mui/material';
+import { getAllUsers } from '../services/UserApi';
+
+const UserList = () => {
+  const [userList, setUserList] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getAllUsers();
+        setUserList(response.data);
+      } catch (error) {
+        console.error('Error fetching user data', error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  return (
+    <div>
+      <Typography variant="h5" gutterBottom>
+        User List
+      </Typography>
+      <List>
+        {userList.length === 0 ? (
+          <Typography>No users found</Typography>
+        ) : (
+          userList.map(user => (
+            <ListItem key={user.id}>
+              <ListItemAvatar>
+                <Avatar>{user.name[0]}</Avatar>
+              </ListItemAvatar>
+              <ListItemText primary={user.name} secondary={user.email} />
+            </ListItem>
+          ))
+        )}
+      </List>
+    </div>
+  );
+};
+
+export default UserList;
+
+
+//UserApi.js
+import axios from 'axios';
+
+export const getAllUsers = async () => {
+  const response = await axios.get('http://localhost:3005/users');
+  return response;
+};
+
+
+TERMINAL COMMANDS
+
+In one terminal
+cd reactapp
+npm install
+npm install json-server@0.16.3
+npm install canvas
+
+Another server for db.json
+cd reactapp
+npx json-server --watch db.json -p 3005
+
